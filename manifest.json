@@ -1,0 +1,10 @@
+{
+  "name": "ProgressLife",
+  "short_name": "ProgressLife",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#070A12",
+  "theme_color": "#070A12",
+  "description": "Mentor de evolu\u00e7\u00e3o pessoal com plano, miss\u00f5es e evid\u00eancia.",
+  "icons": []
+}
