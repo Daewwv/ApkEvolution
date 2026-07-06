@@ -1,11 +1,9 @@
-# ProgressLife v0.2
+# ProgressLife v0.3
 
-Protótipo PWA mobile-first.
-
-Foco:
-- Mentor de execução
-- Plano de 15 dias
-- Missões com "Por quê?"
-- XP
-- Evidência objetiva
-- Funcionamento quase todo sem IA
+Protótipo PWA com:
+- Ritmo flexível: Constância, Equilíbrio, Intensivo.
+- Passos persistentes.
+- Modo Avanço.
+- Pendências.
+- Evidência real.
+- Sem backend e sem IA nesta versão.

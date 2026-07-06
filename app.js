@@ -1,177 +1,37 @@
-const DB_KEY = "progresslife_v02";
-const initial = {
-  user: { name: "Marlon", objective: "Liberdade financeira", target: "Guardar R$ 2.000 em 12 meses" },
-  xp: 245,
-  level: 3,
-  route: "home",
-  phase: { name: "Controle Financeiro", progress: 12, reviewIn: 5 },
-  evidence: { saved: 40, studyMinutes: 55, completed: 7, streak: 3 },
-  missions: [
-    { id: 1, type: "principal", icon: "💰", title: "Separar R$10 hoje", time: "5 min", xp: 50, done: false, why: "Porque criar o hábito de guardar dinheiro é o primeiro tijolo do seu fundo de emergência." },
-    { id: 2, type: "aprendizado", icon: "📚", title: "Aprender sobre orçamento pessoal", time: "15 min", xp: 35, done: false, why: "Porque você não controla o que não mede. Orçamento é a base da liberdade financeira." },
-    { id: 3, type: "execução", icon: "🧾", title: "Registrar seus gastos de hoje", time: "10 min", xp: 30, done: false, why: "Porque seus vazamentos financeiros aparecem quando você registra tudo sem mentir para si mesmo." },
-    { id: 4, type: "impacto", icon: "⚡", title: "Ganhar R$10 extra", time: "Opcional", xp: 80, done: false, impact: true, why: "Porque aumentar renda acelera o plano. Pode ser vendendo algo, fazendo uma entrega ou oferecendo um serviço simples." }
-  ]
-};
-let state = JSON.parse(localStorage.getItem(DB_KEY) || "null") || initial;
-let timer = { seconds: 25 * 60, id: null, running: false };
 
-function save(){ localStorage.setItem(DB_KEY, JSON.stringify(state)); }
-function $(s){ return document.querySelector(s); }
-function nav(route){ state.route = route; save(); render(); window.scrollTo(0,0); }
-function doneCount(){ return state.missions.filter(m=>m.done).length; }
-function formatMoney(n){ return `R$ ${n}`; }
-
-function complete(id){
-  const m = state.missions.find(x=>x.id===id);
-  if(!m) return;
-  m.done = !m.done;
-  state.xp += m.done ? m.xp : -m.xp;
-  if(m.done && m.id === 1) state.evidence.saved += 10;
-  if(!m.done && m.id === 1) state.evidence.saved = Math.max(0, state.evidence.saved - 10);
-  state.evidence.completed = state.missions.filter(x=>x.done).length + 7;
-  if(state.xp >= state.level * 150) state.level += 1;
-  save(); render();
-}
-
-function mission(m){
-  return `<article class="mission ${m.done?'done':''} ${m.impact?'impact':''}" onclick="complete(${m.id})">
-    <div class="mission-head">
-      <div class="icon">${m.icon}</div>
-      <div>
-        <h4>${m.title}</h4>
-        <p>${m.type.toUpperCase()} · ${m.time} · +${m.xp} XP</p>
-      </div>
-    </div>
-    <p class="why"><b>Por quê?</b> ${m.why}</p>
-    <div class="mission-foot">
-      <span class="pill">${m.done ? "Concluída" : "Toque para concluir"}</span>
-      <button class="check">${m.done ? "✓" : ""}</button>
-    </div>
-  </article>`;
-}
-
-function layout(content){
-  return `<main class="app">${content}</main>${bottomNav()}`;
-}
-
-function bottomNav(){
-  const b=(r,t,l)=>`<button class="${state.route===r?'active':''}" onclick="nav('${r}')">${t}<br>${l}</button>`;
-  return `<nav class="nav">${b('home','◉','Hoje')}${b('plan','◇','Plano')}${b('evidence','▦','Evidência')}${b('mentor','☻','Mentor')}</nav>`;
-}
-
-function home(){
-  const p = Math.min(100, Math.round((doneCount()/state.missions.length)*100));
-  return layout(`
-    <section class="screen active">
-      <header class="top">
-        <div class="hello"><small>Hoje · Plano de 15 dias</small><h1>Boa noite,<br>${state.user.name}</h1></div>
-        <div class="avatar">PL</div>
-      </header>
-
-      <section class="hero-card">
-        <div class="row"><span class="level">Nível ${state.level}</span><span class="muted">${state.xp} XP</span></div>
-        <h2>${state.user.objective}</h2>
-        <p class="muted">${state.user.target}</p>
-        <div class="progress-wrap">
-          <div class="progress-meta"><span>Fase: ${state.phase.name}</span><b>${state.phase.progress}%</b></div>
-          <div class="bar"><span style="width:${state.phase.progress}%"></span></div>
-        </div>
-        <div class="mentor"><strong>Mentor IA</strong><span class="muted">Revisarei seu plano em ${state.phase.reviewIn} dias. Até lá, execute. Sem conversa vazia.</span></div>
-      </section>
-
-      <div class="section-title"><h3>Missões de hoje</h3><span>${doneCount()}/${state.missions.length} concluídas</span></div>
-      ${state.missions.map(mission).join("")}
-
-      <button class="primary" onclick="nav('timer')">Iniciar sessão de foco</button>
-      <button class="secondary" onclick="nav('review')">Fechamento do dia</button>
-    </section>
-  `);
-}
-
-function plan(){
-  return layout(`
-    <section class="screen active">
-      <p class="eyebrow">Plano mestre</p>
-      <h1>Seu caminho atual</h1>
-      <p class="muted">A IA desenha o caminho. A app acompanha sua execução diária.</p>
-      ${[
-        ["1","Controle Financeiro","Registrar gastos, criar orçamento e separar pequenas quantias."],
-        ["2","Fundo de Emergência","Transformar economia diária em reserva real."],
-        ["3","Aumento de Renda","Testar ações simples para gerar dinheiro extra."],
-        ["4","Primeiros Investimentos","Aprender e aplicar com segurança."]
-      ].map((x,i)=>`<article class="mission ${i===0?'done':''}"><div class="mission-head"><div class="icon">${x[0]}</div><div><h4>${x[1]}</h4><p>${x[2]}</p></div></div></article>`).join("")}
-    </section>
-  `);
-}
-
-function evidence(){
-  return layout(`
-    <section class="screen active">
-      <p class="eyebrow">Regra da Verdade</p>
-      <h1>Evidência, não motivação vazia</h1>
-      <div class="grid">
-        <div class="stat"><strong>${formatMoney(state.evidence.saved)}</strong><span class="muted">guardados</span></div>
-        <div class="stat"><strong>${state.evidence.studyMinutes}m</strong><span class="muted">estudados</span></div>
-        <div class="stat"><strong>${state.evidence.completed}</strong><span class="muted">missões</span></div>
-        <div class="stat"><strong>${state.evidence.streak}</strong><span class="muted">dias ativos</span></div>
-      </div>
-      <article class="mission impact"><div class="mission-head"><div class="icon">⚠️</div><div><h4>Diagnóstico honesto</h4><p>Se você executar menos de 60% do plano, não está no ritmo necessário para alcançar o objetivo. A app vai reduzir dificuldade ou exigir mais responsabilidade.</p></div></div></article>
-    </section>
-  `);
-}
-
-function mentor(){
-  return layout(`
-    <section class="screen active">
-      <p class="eyebrow">Mentor</p>
-      <h1>IA econômica e estratégica</h1>
-      <article class="hero-card"><h2>Próxima revisão</h2><p class="muted">Em ${state.phase.reviewIn} dias a IA analisará seus dados e ajustará o plano. Fora disso, ProgressLife funciona sem gastar IA.</p></article>
-      <article class="mission"><div class="mission-head"><div class="icon">🧠</div><div><h4>Como o mentor pensa</h4><p>Ele olha para execução, economia, estudo, constância e bloqueios. Depois decide se mantém, reduz ou aumenta o plano.</p></div></div></article>
-      <button class="danger" onclick="resetApp()">Reiniciar protótipo</button>
-    </section>
-  `);
-}
-
-function timerScreen(){
-  return layout(`
-    <section class="screen active">
-      <p class="eyebrow">Sessão de foco</p>
-      <h1>Faça uma coisa agora</h1>
-      <article class="hero-card">
-        <h2>Registrar gastos</h2>
-        <p class="muted">25 minutos sem distração.</p>
-        <div class="timer" id="timer">${fmt(timer.seconds)}</div>
-        <button class="primary" onclick="startTimer()">Iniciar</button>
-        <button class="secondary" onclick="pauseTimer()">Pausar</button>
-        <button class="secondary" onclick="finishFocus()">Finalizar e ganhar XP</button>
-      </article>
-    </section>
-  `);
-}
-
-function review(){
-  return layout(`
-    <section class="screen active">
-      <p class="eyebrow">Fechamento</p>
-      <h1>Como foi o dia?</h1>
-      <article class="mission"><div class="mission-head"><div class="icon">✓</div><div><h4>${doneCount()} de ${state.missions.length} missões</h4><p>${doneCount()<2?'Hoje você executou pouco. Sem drama, mas também sem autoengano. Amanhã precisa corrigir.':'Bom avanço. Continue acumulando evidência.'}</p></div></div></article>
-      <textarea placeholder="Qual foi o principal obstáculo de hoje?"></textarea>
-      <button class="primary" onclick="nav('evidence')">Salvar fechamento</button>
-    </section>
-  `);
-}
-
-function fmt(s){return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`;}
-function startTimer(){ if(timer.running)return; timer.running=true; timer.id=setInterval(()=>{timer.seconds--; const e=$('#timer'); if(e)e.textContent=fmt(timer.seconds); if(timer.seconds<=0)pauseTimer();},1000);}
-function pauseTimer(){timer.running=false; clearInterval(timer.id);}
-function finishFocus(){pauseTimer(); timer.seconds=25*60; state.xp+=25; save(); nav('home');}
-function resetApp(){localStorage.removeItem(DB_KEY); state=initial; nav('home');}
-
-function render(){
-  const routes = {home, plan, evidence, mentor, timer:timerScreen, review};
-  document.getElementById("app").innerHTML = (routes[state.route] || home)();
-}
+const KEY="progresslife_v03_state";
+const defaults={route:"login",user:null,rhythm:"equilibrio",missedDays:0,xp:240,savings:40,targetSavings:2000,completedLessons:3,totalLessons:50,missions:[
+{id:"m1",type:"Ação",title:"Separar R$10 para sua reserva",why:"Esta ação constrói o hábito que torna possível chegar aos R$2.000.",cost:2,minutes:5,done:false,persistent:true},
+{id:"m2",type:"Aprendizagem",title:"Aprender o que é orçamento pessoal",why:"Foque em entender gastos fixos, gastos variáveis e onde seu dinheiro está vazando.",cost:1,minutes:15,done:false,persistent:true},
+{id:"m3",type:"Aplicação",title:"Anotar 3 gastos de hoje",why:"Registrar sem analisar não muda nada. O objetivo é perceber padrões.",cost:2,minutes:10,done:false,persistent:true}],
+pending:[{id:"p1",question:"Explique com suas palavras: qual é a diferença entre guardar dinheiro e investir dinheiro?",due:"Antes da próxima revisão",answer:"",done:false}],
+evidence:["Começou o caminho de Liberdade Financeira","Guardou R$40","Aprendeu 3 de 50 conteúdos básicos de economia"]};
+let state=load();
+function load(){try{return {...structuredClone(defaults),...JSON.parse(localStorage.getItem(KEY)||"{}")}}catch{return structuredClone(defaults)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(state))}
+function go(route){state.route=route;save();render()}
+function nav(){return `<nav class="nav">${navBtn("home","Hoje")}${navBtn("plan","Plano")}${navBtn("evidence","Evidência")}${navBtn("profile","Perfil")}</nav>`}
+function navBtn(route,label){return `<button class="${state.route===route?'active':''}" onclick="go('${route}')">${label}</button>`}
+function shell(content,withNav=true){return `<main class="app">${content}${withNav?nav():""}</main>`}
+function rhythmInfo(){return {constancia:{label:"Constância",minutes:30,description:"mínimo sustentável"},equilibrio:{label:"Equilíbrio",minutes:60,description:"ritmo recomendado"},intensivo:{label:"Intensivo",minutes:120,description:"alto foco"}}[state.rhythm]}
+function login(){return `<section class="page-center"><div style="width:min(420px,100%)"><div class="logo">PL</div><h1>ProgressLife</h1><p class="muted" style="text-align:center">Seu caminho diário para transformar objetivos em evolução real.</p><div class="card stack"><label>Nome</label><input id="name" placeholder="Seu nome" value="Marlon"/><button class="primary" onclick="start()">Começar</button></div></div></section>`}
+function start(){state.user={name:document.getElementById("name").value||"Usuário"};state.route="home";save();render()}
+function home(){const r=rhythmInfo(),pct=Math.round(state.savings/state.targetSavings*100),allDone=state.missions.every(m=>m.done);return shell(`<div class="top"><div><p class="muted">Hoje</p><h2>Olá, ${state.user?.name||"Usuário"}</h2></div><span class="pill">${state.xp} XP</span></div><section class="card hero-card stack"><div><p class="tag">Objetivo principal</p><h2>Liberdade Financeira</h2><p class="muted">Capítulo atual: criar reserva inicial de R$2.000.</p></div><div class="progressbar"><span style="width:${pct}%"></span></div><div class="grid2"><div class="stat"><strong>R$${state.savings}</strong><span>guardados</span></div><div class="stat"><strong>${pct}%</strong><span>do objetivo</span></div></div></section><section class="card stack" style="margin-top:14px"><div class="top" style="margin:0"><div><p class="tag">Ritmo de hoje</p><h3>${r.label}</h3><p class="muted">${r.minutes} min · ${r.description}</p></div><button class="smallbtn" onclick="go('rhythm')">Trocar</button></div>${state.missedDays>=2?`<div class="warning card"><strong>Ajuste recomendado</strong><p class="muted">Você falhou 2 dias seguidos. Talvez seja melhor reduzir o ritmo hoje.</p></div>`:""}</section><h3 style="margin:20px 0 10px">Passos de hoje</h3><div class="stack">${state.missions.map(renderMission).join("")}</div>${allDone?advanceBlock():""}<button class="secondary" style="margin-top:14px" onclick="simulateMiss()">Simular dia não cumprido</button>`)}
+function renderMission(m){return `<article class="card mission ${m.done?'done':''}"><div><p class="tag">${m.type} · ${m.minutes} min · custo ${"★".repeat(m.cost)}</p><h3>${m.title}</h3><div class="reason">Foco: ${m.why}</div>${m.type==="Aprendizagem"?`<button class="smallbtn" style="margin-top:10px" onclick="go('lesson')">Ver recurso</button>`:""}</div><button class="check ${m.done?'done':''}" onclick="completeMission('${m.id}')">${m.done?'Concluída':'Marcar aqui'}</button></article>`}
+function completeMission(id){const m=state.missions.find(x=>x.id===id);if(!m||m.done)return;m.done=true;state.xp+=25;if(m.id==="m1")state.savings+=10;if(m.id==="m2")state.completedLessons+=1;state.evidence.unshift(`Concluiu: ${m.title}`);state.missedDays=0;save();render()}
+function advanceBlock(){return `<section class="card success stack" style="margin-top:16px"><div><p class="tag">Modo Avanço</p><h3>Você concluiu o essencial de hoje.</h3><p class="muted">Se ainda tiver energia, escolha um avanço. Se não tiver, descansar também é uma decisão inteligente.</p></div><button class="primary" onclick="addImpact()">Fazer ação de impacto</button><button class="secondary" onclick="go('pending')">Resolver pendência</button><button class="secondary" onclick="alert('Descanso registrado. Amanhã continuamos.')">Descansar e manter constância</button></section>`}
+function addImpact(){state.missions.push({id:"extra"+Date.now(),type:"Impacto",title:"Conseguir ou economizar R$10 extras",why:"Acelera seu caminho financeiro sem esperar o próximo ciclo.",cost:4,minutes:20,done:false,persistent:false});save();render()}
+function simulateMiss(){state.missedDays+=1;save();render()}
+function rhythm(){return shell(`<div class="top"><div><p class="muted">Configuração</p><h2>Escolha seu ritmo</h2></div></div><p class="muted">Você pode mudar quando quiser. ProgressLife recomenda, mas a decisão final é sua.</p><div class="stack">${rhythmCard("constancia","Constância","15-30 min. Para manter o caminho mesmo em dias difíceis.")}${rhythmCard("equilibrio","Equilíbrio","45-60 min. Ritmo recomendado para a maioria dos usuários.")}${rhythmCard("intensivo","Intensivo","90-120 min. Para dias de alta energia e foco.")}</div><button class="secondary" style="margin-top:14px" onclick="go('home')">Voltar</button>`)}
+function rhythmCard(id,title,desc){return `<button class="card" style="text-align:left;color:var(--text)" onclick="setRhythm('${id}')"><p class="tag">${state.rhythm===id?"Selecionado":"Ritmo"}</p><h3>${title}</h3><p class="muted">${desc}</p></button>`}
+function setRhythm(id){state.rhythm=id;save();go("home")}
+function lesson(){return shell(`<div class="top"><div><p class="muted">Recurso guiado</p><h2>Orçamento pessoal</h2></div></div><section class="card stack"><p class="tag">O que aprender hoje</p><h3>Foque em 3 coisas:</h3><p class="muted">1. Diferença entre gasto fixo e variável.<br>2. Onde o dinheiro costuma vazar.<br>3. Como começar um orçamento simples.</p><a class="primary" style="text-decoration:none;text-align:center" href="https://www.youtube.com/results?search_query=or%C3%A7amento+pessoal+educa%C3%A7%C3%A3o+financeira" target="_blank">Buscar vídeo recomendado</a></section><section class="card stack" style="margin-top:14px"><h3>Depois de assistir</h3><label>Explique com suas palavras o que entendeu</label><textarea id="lessonAnswer" placeholder="Escreva aqui..."></textarea><button class="primary" onclick="saveLessonAnswer()">Salvar resposta</button></section>`)}
+function saveLessonAnswer(){const answer=document.getElementById("lessonAnswer").value.trim();if(!answer){alert("Escreva uma resposta curta.");return}state.pending.push({id:"p"+Date.now(),question:"Revisar compreensão sobre orçamento pessoal",due:"Próxima revisão",answer,done:true});state.evidence.unshift("Explicou com suas palavras o conteúdo de orçamento pessoal");save();go("home")}
+function pending(){return shell(`<div class="top"><div><p class="muted">Compromissos</p><h2>Pendências</h2></div></div><p class="muted">Responda antes da revisão. Se não responder, fica para o próximo ciclo.</p><div class="stack">${state.pending.map(p=>`<section class="card stack"><p class="tag">${p.due}</p><h3>${p.question}</h3><textarea id="ans-${p.id}" placeholder="Responda com suas palavras...">${p.answer||""}</textarea><button class="primary" onclick="savePending('${p.id}')">Salvar</button></section>`).join("")}</div>`)}
+function savePending(id){const p=state.pending.find(x=>x.id===id),val=document.getElementById("ans-"+id).value.trim();if(!val){alert("Responda antes de salvar.");return}p.answer=val;p.done=true;state.evidence.unshift("Respondeu uma pendência para a próxima revisão");save();render()}
+function plan(){return shell(`<div class="top"><div><p class="muted">Seu caminho</p><h2>Plano atual</h2></div></div><section class="card stack"><p class="tag">Capítulo financeiro</p><h3>Reserva inicial de R$2.000</h3><p class="muted">Seu plano não avança por calendário. Avança por passos concluídos e evidência real.</p></section><div class="timeline" style="margin-top:16px"><div class="step done"><div class="dot"></div><div><strong>Diagnóstico inicial</strong><p class="muted">Situação financeira mapeada.</p></div></div><div class="step active"><div class="dot"></div><div><strong>Controle e orçamento</strong><p class="muted">Você está aqui.</p></div></div><div class="step"><div class="dot"></div><div><strong>Reserva de emergência</strong><p class="muted">Próximo capítulo.</p></div></div><div class="step"><div class="dot"></div><div><strong>Primeiros investimentos</strong><p class="muted">Depois da reserva.</p></div></div></div>`)}
+function evidence(){const pctLessons=Math.round(state.completedLessons/state.totalLessons*100),pctSavings=Math.round(state.savings/state.targetSavings*100);return shell(`<div class="top"><div><p class="muted">Progresso real</p><h2>Evidência</h2></div></div><div class="stack"><section class="card stack"><div class="top" style="margin:0"><div><p class="tag">Ahorro</p><h3>R$${state.savings} / R$${state.targetSavings}</h3></div><strong>${pctSavings}%</strong></div><div class="progressbar"><span style="width:${pctSavings}%"></span></div></section><section class="card stack"><div class="top" style="margin:0"><div><p class="tag">Conhecimento</p><h3>${state.completedLessons} / ${state.totalLessons} conteúdos</h3></div><strong>${pctLessons}%</strong></div><div class="progressbar"><span style="width:${pctLessons}%"></span></div></section><section class="card stack"><h3>Histórico</h3>${state.evidence.slice(0,8).map(e=>`<p class="muted">✔ ${e}</p>`).join("")}</section></div>`)}
+function profile(){return shell(`<div class="top"><div><p class="muted">Usuário #000001</p><h2>${state.user?.name||"Usuário"}</h2></div></div><section class="card stack"><p class="tag">Perfil vivo</p><h3>Ritmo atual: ${rhythmInfo().label}</h3><p class="muted">ProgressLife compara você com sua versão anterior, nunca com outras pessoas.</p><div class="grid2"><div class="stat"><strong>${state.missedDays}</strong><span>falhas seguidas</span></div><div class="stat"><strong>${state.pending.length}</strong><span>pendências</span></div></div></section><button class="secondary" style="margin-top:14px" onclick="go('rhythm')">Mudar ritmo</button><button class="danger" style="margin-top:10px" onclick="resetApp()">Reiniciar teste</button>`)}
+function resetApp(){if(confirm("Reiniciar o protótipo?")){localStorage.removeItem(KEY);state=load();render()}}
+function render(){if(!state.user&&state.route!=="login")state.route="login";const routes={login,home,rhythm,lesson,pending,plan,evidence,profile};document.getElementById("app").innerHTML=(routes[state.route]||home)()}
 render();
-
-if("serviceWorker" in navigator){ navigator.serviceWorker.register("./service-worker.js").catch(()=>{}); }
