@@ -1,9 +1,18 @@
-# ProgressLife v0.3
+# ProgressLife v0.3.1
 
-Protótipo PWA com:
-- Ritmo flexível: Constância, Equilíbrio, Intensivo.
-- Passos persistentes.
-- Modo Avanço.
-- Pendências.
-- Evidência real.
-- Sem backend e sem IA nesta versão.
+Correções:
+- Permite desmarcar missão concluída.
+- Botão Voltar em telas internas.
+- Missão de gastos agora é análise, não só anotação.
+- Pendências mostram confirmação ao salvar.
+- Alert do navegador substituído por toast central.
+- Versão visível na Home.
+
+## Publicação
+Substituir:
+- index.html
+- styles.css
+- app.js
+- manifest.json
+- service-worker.js
+- README.md
