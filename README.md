@@ -1,8 +1,9 @@
-# ProgressLife v0.4.1 Engines
+# ProgressLife v0.4.2 Engines
 
-Correcciones:
-- Aprender una habilidad ya no se redirige a finanzas.
-- Diagnóstico financiero pregunta empleo y oferta.
-- Si no tiene producto/servicio, no manda a vender: manda a descubrir oportunidades.
-- Misiones con respuesta tienen textarea funcional.
-- Para marcar una misión con evidencia textual, primero debe responder.
+Correções:
+- Caminhos não construídos não geram plano errado.
+- MVP disponível: Liberdade Financeira.
+- Tela de boas-vindas ao plano.
+- Plano mostra próximos capítulos.
+- Missões de texto explicam o que escrever.
+- Missões de vídeo usam quiz simples.
