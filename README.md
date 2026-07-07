@@ -1,18 +1,26 @@
-# ProgressLife v0.3.1
+# ProgressLife v0.4 Engines
 
-Correções:
-- Permite desmarcar missão concluída.
-- Botão Voltar em telas internas.
-- Missão de gastos agora é análise, não só anotação.
-- Pendências mostram confirmação ao salvar.
-- Alert do navegador substituído por toast central.
-- Versão visível na Home.
+Primeira versão com motores separados.
+
+## Estrutura
+
+- core/diagnosticEngine.js
+- core/planEngine.js
+- core/missionEngine.js
+- core/evidenceEngine.js
+- content/financeMissions.js
+- app.js
+
+## O que testa
+
+- Diagnóstico inicial.
+- Competências internas.
+- Gargalo principal.
+- Plano de 15 dias sem IA.
+- Missões escolhidas por motor.
+- Evidências geradas a partir das missões.
+- Conteúdo separado do código.
 
 ## Publicação
-Substituir:
-- index.html
-- styles.css
-- app.js
-- manifest.json
-- service-worker.js
-- README.md
+
+Subir todos os arquivos e pastas no GitHub Pages. Depois abrir com Ctrl + F5.

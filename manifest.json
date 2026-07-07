@@ -1,9 +1,1 @@
-{
-  "name": "ProgressLife v0.3.1",
-  "short_name": "ProgressLife",
-  "start_url": "./index.html",
-  "display": "standalone",
-  "background_color": "#090d18",
-  "theme_color": "#090d18",
-  "icons": []
-}
+{"name":"ProgressLife v0.4 Engines","short_name":"ProgressLife","start_url":"./index.html","display":"standalone","background_color":"#090d18","theme_color":"#090d18","icons":[]}

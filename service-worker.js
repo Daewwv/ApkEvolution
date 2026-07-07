@@ -1,1 +1,3 @@
-self.addEventListener('install',event=>{event.waitUntil(caches.open('progresslife-v03').then(cache=>cache.addAll(['./','./index.html','./styles.css','./app.js','./manifest.json'])))});self.addEventListener('fetch',event=>{event.respondWith(caches.match(event.request).then(response=>response||fetch(event.request)))});
+// Development version. Kept minimal to reduce cache problems during testing.
+self.addEventListener('install', event => self.skipWaiting());
+self.addEventListener('activate', event => event.waitUntil(clients.claim()));
