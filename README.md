@@ -1,26 +1,8 @@
-# ProgressLife v0.4 Engines
+# ProgressLife v0.4.1 Engines
 
-Primeira versão com motores separados.
-
-## Estrutura
-
-- core/diagnosticEngine.js
-- core/planEngine.js
-- core/missionEngine.js
-- core/evidenceEngine.js
-- content/financeMissions.js
-- app.js
-
-## O que testa
-
-- Diagnóstico inicial.
-- Competências internas.
-- Gargalo principal.
-- Plano de 15 dias sem IA.
-- Missões escolhidas por motor.
-- Evidências geradas a partir das missões.
-- Conteúdo separado do código.
-
-## Publicação
-
-Subir todos os arquivos e pastas no GitHub Pages. Depois abrir com Ctrl + F5.
+Correcciones:
+- Aprender una habilidad ya no se redirige a finanzas.
+- Diagnóstico financiero pregunta empleo y oferta.
+- Si no tiene producto/servicio, no manda a vender: manda a descubrir oportunidades.
+- Misiones con respuesta tienen textarea funcional.
+- Para marcar una misión con evidencia textual, primero debe responder.
