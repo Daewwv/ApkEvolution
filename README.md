@@ -1,11 +1,10 @@
-# ProgressLife v0.5 Review
+# ProgressLife v0.5.1 Review
 
-Versión enfocada solo en Libertad Financiera.
-
-Subir/reemplazar:
-- index.html
-- styles.css
-- app.js
-- README.md
-
-Luego abrir con Ctrl + F5.
+Correcciones:
+- Roadmap coherente con la etapa detectada.
+- Perfil Evolutivo más completo.
+- Timeline.
+- Confianza del mentor.
+- Preparado para avanzar.
+- Modo Avance con misión extra.
+- Home más enfocada en próximo paso.
