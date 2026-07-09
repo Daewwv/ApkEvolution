@@ -1,9 +1,11 @@
-# ProgressLife v0.4.2 Engines
+# ProgressLife v0.5 Review
 
-Correções:
-- Caminhos não construídos não geram plano errado.
-- MVP disponível: Liberdade Financeira.
-- Tela de boas-vindas ao plano.
-- Plano mostra próximos capítulos.
-- Missões de texto explicam o que escrever.
-- Missões de vídeo usam quiz simples.
+Versión enfocada solo en Libertad Financiera.
+
+Subir/reemplazar:
+- index.html
+- styles.css
+- app.js
+- README.md
+
+Luego abrir con Ctrl + F5.
